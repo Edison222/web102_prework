@@ -21,6 +21,14 @@ body {
 
 .stats-container {
     display: flex;
+    flex-wrap: wrap; /* Allows items to wrap to the next line */
+    justify-content: space-around; /* Distributes space around items */
+    align-items: center; /* Aligns items along the cross axis */
+    margin: 10px 0; /* Adds vertical margin */
+}
+.stats-container:hover {
+    cursor: pointer;
+    box-shadow: 0 0 30px lightblue;
 }
 
 .stats-card {

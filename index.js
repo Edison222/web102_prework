@@ -97,10 +97,11 @@ function filterUnfundedOnly() {
     deleteChildElements(gamesContainer);
 
     // use filter() to get a list of games that have not yet met their goal
-
-
+    const unfunded = GAMES_JSON.filter((game) => {
+       return game.pledged < game.goal;
+    });
     // use the function we previously created to add the unfunded games to the DOM
-
+    addGamesToPage(unfunded);
 }
 
 // show only games that are fully funded
@@ -108,10 +109,12 @@ function filterFundedOnly() {
     deleteChildElements(gamesContainer);
 
     // use filter() to get a list of games that have met or exceeded their goal
-
+    const funded = (GAMES_JSON.filter(game =>{
+        return game.pledged >= game.goal;
+    }))
 
     // use the function we previously created to add unfunded games to the DOM
-
+    addGamesToPage(funded);
 }
 
 // show all games
@@ -119,7 +122,7 @@ function showAllGames() {
     deleteChildElements(gamesContainer);
 
     // add all games from the JSON data to the DOM
-
+    addGamesToPage(GAMES_JSON)
 }
 
 // select each button in the "Our Games" section
@@ -128,7 +131,9 @@ const fundedBtn = document.getElementById("funded-btn");
 const allBtn = document.getElementById("all-btn");
 
 // add event listeners with the correct functions to each button
-
+unfundedBtn.addEventListener("click", filterUnfundedOnly);
+fundedBtn.addEventListener("click", filterFundedOnly);
+allBtn.addEventListener("click", showAllGames);
 
 /*************************************************************************************
  * Challenge 6: Add more information at the top of the page about the company.
@@ -139,14 +144,20 @@ const allBtn = document.getElementById("all-btn");
 const descriptionContainer = document.getElementById("description-container");
 
 // use filter or reduce to count the number of unfunded games
-
+const unfundedGamesSum = GAMES_JSON.reduce((sum, game) => {
+    return game.pledged < game.goal ? sum + 1 : sum;
+}, 0);
 
 // create a string that explains the number of unfunded games using the ternary operator
-
+let unfundedMessage = totalAmountRaised > 0 
+    ? `A total of $${totalAmountRaised.toLocaleString()} has been raised for ${GAMES_JSON.length} games, but ${unfundedGamesSum} games remain unfunded.` 
+    : "There hasn't been any contribution yet, please help!";
 
 // create a new DOM element containing the template string and append it to the description container
-
-/************************************************************************************
+const messageElement = document.createElement("p");
+messageElement.textContent = unfundedMessage;
+descriptionContainer.appendChild(messageElement);
+/*****************************************************************************
  * Challenge 7: Select & display the top 2 games
  * Skills used: spread operator, destructuring, template literals, sort 
  */
@@ -154,12 +165,18 @@ const descriptionContainer = document.getElementById("description-container");
 const firstGameContainer = document.getElementById("first-game");
 const secondGameContainer = document.getElementById("second-game");
 
-const sortedGames =  GAMES_JSON.sort( (item1, item2) => {
-    return item2.pledged - item1.pledged;
-});
+// Sort games by pledged amount in descending order
+const sortedGames = GAMES_JSON.sort((item1, item2) => item2.pledged - item1.pledged);
 
-// use destructuring and the spread operator to grab the first and second games
+// Use destructuring to get the top two games
+const [firstGame, secondGame, ...rest] = sortedGames;
 
-// create a new element to hold the name of the top pledge game, then append it to the correct element
+// Create a new element to hold the name of the top pledge game
+const firstGameTitle = document.createElement("h4");
+firstGameTitle.textContent = firstGame.name;
+firstGameContainer.appendChild(firstGameTitle);
 
-// do the same for the runner up item
+// Do the same for the runner-up game
+const secondGameTitle = document.createElement("h4");
+secondGameTitle.textContent = secondGame.name;
+secondGameContainer.appendChild(secondGameTitle);
